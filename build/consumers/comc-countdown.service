@@ -1,0 +1,14 @@
+[Unit]
+Description=Countdown
+After=syslog.target
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/app/comc
+ExecStart=/app/start-countdowns.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

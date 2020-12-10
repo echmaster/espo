@@ -1,0 +1,25 @@
+MAILTO=""
+
+# Проверка статусов email
+1 0,12 * * * /usr/local/bin/php /app/comc/yii cron/send-email-status-check > /dev/null 2>&1
+
+# Проверка статусов sms
+1 0,12 * * * /usr/local/bin/php /app/comc/yii cron/send-sms-status-check > /dev/null 2>&1
+
+# Проверка статусов phone
+1 0,12 * * * /usr/local/bin/php /app/comc/yii cron/send-phone-status-check > /dev/null 2>&1
+
+# Проверка статусов push
+1 0,12 * * * /usr/local/bin/php /app/comc/yii cron/send-push-status-check > /dev/null 2>&1
+
+# Выгрузка кодов статусов
+1 0 * * * /usr/local/bin/php /app/comc/yii cron/publish-communication-codes > /dev/null 2>&1
+
+# Выгрузка шаблонов
+1 0 * * * /usr/local/bin/php /app/comc/yii cron/publish-templates > /dev/null 2>&1
+
+# Выгрузка тегов
+1 0 * * * /usr/local/bin/php /app/comc/yii cron/publish-tags > /dev/null 2>&1
+
+# Отправка рассылки
+* * * * * /usr/local/bin/php /app/comc/yii cron/publish-mailing > /dev/null 2>&1

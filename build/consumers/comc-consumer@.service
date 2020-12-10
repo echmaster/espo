@@ -1,0 +1,18 @@
+[Unit]
+Description=RabbitMQ Consumer Unit for comc on %i
+StartLimitBurst=0
+StartLimitIntervalSec=300
+# PartOf=consumer-guard.service
+
+[Service]
+WorkingDirectory=/app
+ExecStart=/app/start-consumers.sh %i
+
+# ExecStop=/usr/local/bin/bundle exec service -S /work/www/myunit/shared/tmp/pids/service.state stop
+# ExecReload=/usr/local/bin/bundle exec service -S /work/www/myunit/shared/tmp/pids/service.state restart
+# TimeoutSec=300
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=consumer-guard.service

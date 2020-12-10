@@ -1,0 +1,18 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/www/sites/comc/runtime/logs/*.log
+    fields:
+      site: comc
+    multiline.pattern: '^\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2}'
+    multiline.negate: true
+    multiline.match: after
+filebeat.config.modules:
+  path: '${path.config}/modules.d/*.yml'
+  reload.enabled: false
+output.logstash:
+  hosts:
+    - '10.10.77.170:5047'
+  ssl.certificate_authorities:
+    - /etc/certs/logstash-forwarder.crt

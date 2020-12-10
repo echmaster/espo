@@ -1,0 +1,28 @@
+[Unit]
+Description=Consumers Guard Unit
+# StartLimitBurst=10
+# StartLimitIntervalSec=300
+After=syslog.target
+After=network.target
+${Requires}
+PartOf=container.target
+
+[Service]
+Type=simple
+# PIDFile=/work/www/myunit/shared/tmp/pids/service.pid
+# User=myunit
+# Group=myunit
+# Environment=RACK_ENV=production
+# OOMScoreAdjust=-1000
+WorkingDirectory=/app
+# ExecStart=/app/start-consumers.sh
+ExecStart=/bin/sleep 300
+
+# ExecStop=/usr/local/bin/bundle exec service -S /work/www/myunit/shared/tmp/pids/service.state stop
+# ExecReload=/usr/local/bin/bundle exec service -S /work/www/myunit/shared/tmp/pids/service.state restart
+# TimeoutSec=300
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=container.target

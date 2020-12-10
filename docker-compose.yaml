@@ -1,0 +1,87 @@
+version: '3.7'
+
+networks:
+  espo:
+    driver: bridge
+    name: espo
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16
+
+services:
+  db:
+    container_name: espo_db
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'espo'
+      MYSQL_ROOT_PASSWORD: 'espo'
+      #TZ: 'Europe/Moscow'
+    ports:
+      - 3306:3306
+    volumes:
+      - ./maridb:/var/lib/mysql
+    expose:
+      - 3306
+    command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
+    networks:
+      - espo
+  nginx:
+    container_name: espo_nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+      #- ${BACK_HTTPS_PORT:-443}:443
+    volumes:
+      - ./build/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./build/nginx/servers:/etc/nginx/servers
+      #- ./build/nginx/ssl:/etc/ssl
+      # - ./build/nginx/comc.ssl:/etc/nginx/conf.d/comc.ssl
+      - ./project:/var/www/html
+    links:
+      - fpm
+    networks:
+      - espo
+  fpm:
+    container_name: espo_fpm
+    build:
+      dockerfile: Dockerfile
+      context: ./build/php-fpm
+    user: ${USER_ID:-33}
+    ports:
+      - 9000:9000
+    volumes:
+      - ./project:/var/www/html
+      #- ~/.composer-docker/cache:/root/.composer/cache:delegated
+    depends_on:
+      - db
+      #- rmq
+    networks:
+      - espo
+
+
+  #espocrm:
+  #  build:
+  #    context: ./docker/apache
+  #    dockerfile: Dockerfile
+  #  environment:
+  #    ESPOCRM_DATABASE_PASSWORD: example
+  #    ESPOCRM_ADMIN_USERNAME: admin
+  #    ESPOCRM_ADMIN_PASSWORD: password
+  #    ESPOCRM_SITE_URL: "http://localhost:8080"
+  #  restart: always
+  #  ports:
+  #    - 8080:80
+  #  volumes:
+  #    - ./project:/var/www/html
+
+  #espocrm-cron:
+  #  container_name: espocrm-cron
+  #  build:
+  #    context: ./docker/apache
+  #    dockerfile: Dockerfile
+  #  volumes:
+  #    - ./project:/var/www/html
+  #  restart: always
+  #  entrypoint: docker-cron.sh
